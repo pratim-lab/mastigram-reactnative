@@ -1,0 +1,6 @@
+export const RobotoRegular = "Roboto-Regular"
+export const RobotoMedium = "Roboto-Medium"
+export const RobotoThin = "Roboto-Thin"
+export const RobotoLight = "Roboto-Light"
+export const GothamBlack = "Gotham-Black"
+export const GothamLight = "Gotham-Light"

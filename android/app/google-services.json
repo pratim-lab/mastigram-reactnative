@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "778241987052",
+    "project_id": "mastigram-app",
+    "storage_bucket": "mastigram-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:778241987052:android:63e8fe6afdb37b88fef0c9",
+        "android_client_info": {
+          "package_name": "com.mastigramplus.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "778241987052-6j6irffaksv14jko6hfr4vlfp1j50pbf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAdlfRRaygEt0pvaEHKAQjaOQ-wk7e9Jm0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "778241987052-6j6irffaksv14jko6hfr4vlfp1j50pbf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
