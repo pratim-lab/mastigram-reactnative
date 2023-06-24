@@ -18,8 +18,12 @@ const TextField = (props) => {
                 height: 45,
                 marginBottom: 10,
                 width: "100%",
-                padding: 0
+                padding: 0,
+                textAlignVertical: "top"
+                // textAlignVertical: "center"
+                // position: "relative"
             }}
+            conta
             {...props}
         />
     )

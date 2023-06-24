@@ -2,7 +2,6 @@ import { View, Text, Dimensions } from 'react-native'
 import React, { useEffect } from 'react'
 import Main from '../Components/Main'
 import Feather from 'react-native-vector-icons/Feather'
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useRecoilValue } from 'recoil'
 import { CountdownCircleTimer } from 'react-native-countdown-circle-timer'
 import moment from 'moment'
@@ -10,31 +9,32 @@ import ImageHeader from '../Components/ImageHeader'
 import { getTestByIDAction } from '../../Actions/TestActions'
 import { profileState, testByIDState } from '../../Actions/Atoms'
 import { GothamBook } from '../../assets/fonts/font'
+import { useIsFocused } from '@react-navigation/native'
 
 const windowWidth = Dimensions.get('window').width;
 
 const PedingTest = ({ route }) => {
 
     const { id } = route.params;
+    const isFocused = useIsFocused();
     const testData = useRecoilValue(testByIDState)
     const profileData = useRecoilValue(profileState)
     const currentTime = moment()
-    const testTime = moment(`${testData?.test_date} ${testData?.test_time}`, "YYYY-MM-DD HH:mm:ss")
-    const timeDiff = moment.duration(currentTime.diff(testTime)).asSeconds().toFixed(2)
-    const remainingData = (Number(profileData?.alert_hour ? profileData?.alert_hour : 7) * 60 * 60) - Number(timeDiff)
-    const resultSubmitTime = moment(`${testData?.test_date} ${testData?.test_time}`, "YYYY-MM-DD HH:mm:ss").add(Number(profileData?.alert_hour ? profileData?.alert_hour : 7), "hours").format("YYYY-MM-DD HH:mm:ss")
+    const testTime = testData?.test_date && testData?.test_time && moment(`${testData?.test_date} ${testData?.test_time}`, "YYYY-MM-DD HH:mm:ss")
+    const timeDiff = testData?.test_date && testData?.test_time && moment.duration(currentTime.diff(testTime)).asSeconds().toFixed(2)
+    const remainingData = (Number(profileData?.alert_hour ? profileData?.alert_hour : 7) * 60 * 60) - Number(timeDiff).toFixed(2)
 
     useEffect(() => {
         getTestByIDAction({
             test_id: id
         })
-    }, [id])
+    }, [id, isFocused])
 
     return (
         <Main>
             <View style={{
                 flex: 1,
-                marginVertical: -15,
+                marginVertical: -20,
                 marginHorizontal: -15,
                 paddingHorizontal: 15,
                 backgroundColor: "#FFFFFF"
@@ -81,12 +81,12 @@ const PedingTest = ({ route }) => {
                         alignItems: "center",
                         justifyContent: "center"
                     }}>
-                        {testData?.test_date &&
+                        {testData?.test_date && remainingData > 0 &&
                             <CountdownCircleTimer
                                 isPlaying
                                 duration={(profileData?.alert_hour ? profileData?.alert_hour : 7) * 60 * 60}
                                 initialRemainingTime={remainingData}
-                                colors={['#F65C00', '#D0D0D0']}
+                                colors={['#F65C00', '#040303']}
                                 colorsTime={[0, remainingData]}
                                 size={windowWidth * .85}
                             >

@@ -27,6 +27,11 @@ export const authState = atom({
     ]
 });
 
+export const forgotState = atom({
+    key: 'forgotState',
+    default: {}
+});
+
 export const fcmTokenState = atom({
     key: 'fcmTokenState',
     default: null,
@@ -57,4 +62,12 @@ export const testListState = atom({
 export const testByIDState = atom({
     key: 'testByIDState',
     default: {},
+});
+
+export const appTourState = atom({
+    key: 'appTourState',
+    default: "add",
+    effects: [
+        localStorageEffect('appTour')
+    ]
 });

@@ -14,13 +14,16 @@ import LogResult from '../Views/Screens/LogResult';
 import TestDetails from '../Views/Screens/TestDetails';
 import PedingTest from '../Views/Screens/PedingTest';
 import ExportSuccess from '../Views/Screens/ExportSuccess';
+import { appTourState } from '../Actions/Atoms';
+import { useRecoilState } from 'recoil';
+import AppTooltrip from '../Views/Components/Modules/AppTooltrip';
 
 const Stack = createNativeStackNavigator();
 
 const TestRecordTab = () => {
     return (
         <Stack.Navigator
-            initialRouteName="Home"
+            initialRouteName="TestRecords"
             headerMode="screen"
             screenOptions={{
                 headerShown: false,
@@ -68,6 +71,9 @@ const SettingsTab = () => {
 const Tab = createBottomTabNavigator();
 
 export default function AppNavigation() {
+
+    const [appTour, setAppTour] = useRecoilState(appTourState)
+
     return (
         <Tab.Navigator
             screenOptions={{
@@ -81,7 +87,7 @@ export default function AppNavigation() {
                 name="TestRecordTab"
                 component={TestRecordTab}
                 options={{
-                    tabBarLabel: "Test Records",
+                    tabBarLabel: "Tests",
                     tabBarIcon: ({ color, size, focused }) => focused ?
                         <Ionicons name="md-list-circle-sharp" color={color} size={32} /> :
                         <Ionicons name="md-list-circle-outline" color={color} size={32} />
@@ -90,10 +96,12 @@ export default function AppNavigation() {
                 name="ExportTab"
                 component={ExportTab}
                 options={{
-                    tabBarLabel: "Export Records",
+                    tabBarLabel: "Export",
                     tabBarIcon: ({ color, size, focused }) => focused ?
                         <Ionicons name="share-sharp" color={color} size={30} /> :
-                        <Ionicons name="share-outline" color={color} size={30} />
+                        <AppTooltrip isVisible={appTour === "export"}>
+                            <Ionicons name="share-outline" color={color} size={30} />
+                        </AppTooltrip>
                 }} />
             <Tab.Screen
                 name="SettingsTab"

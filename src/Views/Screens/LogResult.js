@@ -1,5 +1,5 @@
 import { View, Text, Dimensions } from 'react-native'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Main from '../Components/Main'
 import ButtonSolidRound from '../Components/Modules/ButtonSolidRound'
 import { useFormik } from 'formik'
@@ -9,8 +9,6 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import DatePicker from 'react-native-date-picker'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
-import { Modal, Portal } from 'react-native-paper'
-import { TextInput } from 'react-native'
 import moment from 'moment'
 import ImageHeader from '../Components/ImageHeader'
 import { getTestByIDAction, logResultAction } from '../../Actions/TestActions'
@@ -19,15 +17,17 @@ import { TouchableOpacity } from 'react-native'
 import TextFieldOutline from '../Components/Modules/TextFieldOutline'
 import { useCallback } from 'react'
 import { GothamBook } from '../../assets/fonts/font'
+import { useIsFocused } from '@react-navigation/native'
+import TreatmentNoteDialog from '../Components/TreatmentNoteDialog'
 
 const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
 
 const LogResult = ({ route, navigation }) => {
 
     const { id, mode } = route.params;
     const testData = useRecoilValue(testByIDState)
     const setMessage = useSetRecoilState(messageState)
+    const isFocused = useIsFocused();
 
     const getActionCall = useCallback(() => {
         getTestByIDAction({
@@ -36,22 +36,22 @@ const LogResult = ({ route, navigation }) => {
     }, [id])
 
     useEffect(() => {
-        getActionCall()
-    }, [])
+        getActionCall();
+    }, [isFocused])
 
-    const formik = useFormik({
-        // enableReinitialize: true,
-        // validationSchema: null,
+    const [datepickerStatus, setDatepickerStatus] = useState({
+        status: false,
+        type: "date",
+        date: moment().toDate(),
+    })
+
+    const { setFieldValue, handleSubmit, values, isSubmitting } = useFormik({
+        enableReinitialize: true,
         initialValues: {
             test_id: id,
             test_result: mode === "E" ? testData?.test_result : "",
-            datepickerStatus: {
-                status: false,
-                type: "",
-                date: moment().format(),
-            },
-            result_date: mode === "E" ? moment(testData?.result_date, "YYYY-MM-DD").format() : moment().format(),
-            result_time: mode === "E" ? moment(testData?.result_time, "HH:mm:ss").format() : moment().format(),
+            result_date: mode === "E" ? testData?.result_date : moment().format("YYYY-MM-DD"),
+            result_time: mode === "E" ? testData?.result_time : moment().format("HH:mm"),
             treatment: mode === "E" ? testData?.treatment : "",
             product_name: mode === "E" ? testData?.product_name : "",
             withhold: mode === "E" ? testData?.withhold : 0,
@@ -59,14 +59,10 @@ const LogResult = ({ route, navigation }) => {
             treatment_note: mode === "E" ? testData?.treatment_note : "",
         },
         onSubmit: (values, actions) => {
-            // console.log(values);
             if (
                 values?.test_result === "" ||
                 values?.result_date === "" ||
                 values?.result_time === ""
-                // values?.treatment === "" ||
-                // values?.product_name === ""
-                // values?.withhold < 1
             ) {
                 actions.setSubmitting(false)
                 setMessage({
@@ -79,20 +75,18 @@ const LogResult = ({ route, navigation }) => {
                     test_id: values?.test_id,
                     test_result: values?.test_result,
                     result_date: moment(values?.result_date).format("YYYY-MM-DD"),
-                    result_time: moment(values?.result_time).format("HH:mm"),
+                    result_time: moment(values?.result_time, "HH:mm:ss").format("HH:mm"),
                     treatment: values?.treatment,
                     product_name: values?.product_name,
                     withhold: values?.withhold,
                     treatment_note: values?.treatment_note
                 }
                 logResultAction(data, actions, navigation)
+                // console.log(data);
+                // actions.setSubmitting(false)
             }
         }
     })
-
-    const { setFieldValue, handleChange, handleSubmit, values, isSubmitting } = formik
-
-    // console.log(values);
 
     return (
         <KeyboardAwareScrollView
@@ -102,7 +96,7 @@ const LogResult = ({ route, navigation }) => {
             <Main>
                 <View style={{
                     flex: 1,
-                    marginVertical: -15,
+                    marginVertical: -20,
                     marginHorizontal: -15,
                     paddingHorizontal: 15,
                     backgroundColor: "#FFFFFF"
@@ -110,7 +104,7 @@ const LogResult = ({ route, navigation }) => {
                     <ImageHeader
                         source={require('../../Resources/Images/banner2.png')}
                         subText={`ENTER TEST RESULT`}
-                        text={`Cow: ${testData?.cow_no}`}
+                        text={`Cow: ${testData?.cow_no ? testData?.cow_no : ""}`}
                         backgroundColor="#F65C00"
                         iconColor="#FFFFFF" />
                     <View style={{ flex: 1 }}>
@@ -142,7 +136,7 @@ const LogResult = ({ route, navigation }) => {
                                     fontWeight: "700",
                                     fontFamily: GothamBook
                                 }}>
-                                    {`${moment(testData?.test_date, "YYYY-MM-DD").format("DD MMM YYYY")} | ${moment(testData?.test_time, "HH:mm:ss").format("HH:mm")}`}
+                                    {`${moment(testData?.test_date, "YYYY-MM-DD").format("DD MMM YYYY")} | ${moment(testData?.result_time, "HH:mm:ss").format("HH:mm")}`}
                                 </Text>
                             </View>
                             <View style={{
@@ -228,9 +222,9 @@ const LogResult = ({ route, navigation }) => {
                                     }}>
                                         <Text style={{ fontFamily: GothamBook, fontWeight: "500", fontSize: 18 }}>Result Date</Text>
                                         <TouchableOpacity
-                                            onPress={() => setFieldValue("datepickerStatus", {
+                                            onPress={() => setDatepickerStatus({
                                                 status: true,
-                                                date: testData?.result_date ? moment(testData?.result_date, "YYYY-MM-DD").toDate() : moment().toDate(),
+                                                date: testData?.result_date ? moment(values?.result_date, "YYYY-MM-DD").toDate() : moment().toDate(),
                                                 type: "date"
                                             })}
                                             style={{
@@ -239,7 +233,7 @@ const LogResult = ({ route, navigation }) => {
                                                 paddingHorizontal: 8,
                                                 paddingVertical: 6
                                             }}>
-                                            <Text style={{ fontFamily: GothamBook, fontWeight: "500", fontSize: 18 }}>{testData?.result_date ? moment(values?.result_date).format("DD MMM YYYY") : moment().format("DD MMM YYYY")}</Text>
+                                            <Text style={{ fontFamily: GothamBook, fontWeight: "500", fontSize: 18 }}>{moment(values?.result_date).format("DD MMM YYYY")}</Text>
                                         </TouchableOpacity>
                                     </View>
                                     {/* Result Time */}
@@ -251,9 +245,9 @@ const LogResult = ({ route, navigation }) => {
                                     }}>
                                         <Text style={{ fontFamily: GothamBook, fontWeight: "500", fontSize: 18 }}>Result Time</Text>
                                         <TouchableOpacity
-                                            onPress={() => setFieldValue("datepickerStatus", {
+                                            onPress={() => setDatepickerStatus({
                                                 status: true,
-                                                date: testData?.result_time ? moment(testData?.result_time, "HH:mm:dd").toDate() : moment().toDate(),
+                                                date: testData?.result_time ? moment(values?.result_time, "HH:mm:ss").toDate() : moment().toDate(),
                                                 type: "time"
                                             })}
                                             style={{
@@ -262,7 +256,7 @@ const LogResult = ({ route, navigation }) => {
                                                 paddingHorizontal: 8,
                                                 paddingVertical: 6
                                             }}>
-                                            <Text style={{ fontFamily: GothamBook, fontWeight: "500", fontSize: 18 }}>{moment(values?.result_time, "HH:mm:ss").format("HH:mm")}</Text>
+                                            <Text style={{ fontFamily: GothamBook, fontWeight: "500", fontSize: 18 }}>{values?.result_time ? moment(values?.result_time, "HH:mm:ss").format("HH:mm") : moment().format("HH:mm")}</Text>
                                         </TouchableOpacity>
                                     </View>
                                 </>}
@@ -337,8 +331,8 @@ const LogResult = ({ route, navigation }) => {
                                 }}>Treatment Details</Text>
                                 <TextFieldOutline
                                     label="Product Name"
-                                    value={values?.product_name}
-                                    onChangeText={handleChange("product_name")}
+                                    defaultValue={values?.product_name}
+                                    onChangeText={(text) => setFieldValue("product_name", text)}
                                 />
                                 <View style={{
                                     flexDirection: "row",
@@ -370,7 +364,7 @@ const LogResult = ({ route, navigation }) => {
                                         height: 40
                                     }}>
                                         <TouchableOpacity
-                                            onPress={() => { setFieldValue("withhold", values?.withhold - 1) }}
+                                            onPress={() => setFieldValue("withhold", values?.withhold - 1)}
                                             disabled={values?.withhold < 1}
                                             style={{
                                                 width: 20,
@@ -389,7 +383,7 @@ const LogResult = ({ route, navigation }) => {
                                             fontFamily: GothamBook
                                         }}>{values?.withhold}</Text>
                                         <TouchableOpacity
-                                            onPress={() => { setFieldValue("withhold", values?.withhold + 1) }}
+                                            onPress={() => setFieldValue("withhold", values?.withhold + 1)}
                                             style={{
                                                 width: 20,
                                                 height: 40,
@@ -412,7 +406,7 @@ const LogResult = ({ route, navigation }) => {
                                 paddingVertical: 20
                             }}>
                                 <TouchableOpacity
-                                    onPress={() => { setFieldValue("notesVisible", true) }}
+                                    onPress={() => setFieldValue("notesVisible", true)}
                                     style={{
                                         flexDirection: "row",
                                         justifyContent: "space-between",
@@ -434,113 +428,39 @@ const LogResult = ({ route, navigation }) => {
                             display: "flex",
                             justifyContent: "center",
                             alignItems: "center",
-                            borderTopWidth: 1,
+                            // borderTopWidth: 1,
                             marginHorizontal: -55,
                             borderColor: "#D0D0D0"
                         }}>
                             <View style={{ width: windowWidth * .5 }}>
                                 <ButtonSolidRound
                                     title="Submit"
-                                    onPress={handleSubmit}
+                                    onPress={() => handleSubmit()}
                                     loading={isSubmitting}
                                     contentStyle={{ height: 55, width: windowWidth * .5 }} />
                             </View>
                         </View>
                     </View>
                 </View>
-                <Portal>
-                    <Modal
-                        visible={values?.notesVisible}
-                        animationType="slide"
-                        contentContainerStyle={{
-                            backgroundColor: '#FFFFFF',
-                            height: "100%",
-                            maxHeight: windowHeight,
-                            bottom: -40,
-                            borderTopLeftRadius: 8,
-                            borderTopRightRadius: 8,
-                            alignItems: "center",
-                            justifyContent: "flex-start",
-                        }}>
-                        <View style={{
-                            height: 55,
-                            borderBottomWidth: 1,
-                            borderColor: "#D0D0D0",
-                            width: "100%",
-                            paddingHorizontal: 20,
-                            alignItems: "center",
-                            justifyContent: "center"
-                        }}>
-                            <View
-                                style={{
-                                    width: "100%",
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                    alignItems: "center"
-                                }}>
-                                <Text style={{
-                                    fontSize: 19,
-                                    fontWeight: "500",
-                                    fontFamily: GothamBook
-                                }}>Treatment Notes</Text>
-                                <TouchableOpacity onPress={() => setFieldValue("notesVisible", false)}>
-                                    <Text style={{
-                                        fontSize: 16,
-                                        fontWeight: "500",
-                                        fontFamily: GothamBook
-                                    }}>Done</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                        <View style={{
-                            paddingHorizontal: 20,
-                            width: "100%",
-                            marginTop: 20
-                        }}>
-                            <View style={{
-                                borderColor: "rgba(208, 208, 208, 1)",
-                                borderWidth: 1.5,
-                                borderRadius: 8,
-                                padding: 10
-                            }}>
-                                <TextInput
-                                    value={values?.treatment_note}
-                                    onChangeText={handleChange("treatment_note")}
-                                    placeholder="Add notes here on treatment."
-                                    placeholderTextColor="#7F7F7F"
-                                    numberOfLines={6}
-                                    multiline={true}
-                                    style={{
-                                        backgroundColor: "#FFFFFF",
-                                        textAlignVertical: 'top',
-                                        height: 120,
-                                        textInputHeight: 44,
-                                        marginBottom: 10,
-                                        textAlignVertical: 'top'
-                                    }}
-                                />
-                            </View>
-                        </View>
-                    </Modal>
-                </Portal>
-                {values?.datepickerStatus?.status &&
+                <TreatmentNoteDialog setFieldValue={setFieldValue} values={values} />
+                {datepickerStatus?.status &&
                     <DatePicker
                         modal
-                        mode={values?.datepickerStatus?.type}
-                        open={values?.datepickerStatus?.status}
-                        date={values?.datepickerStatus?.date}
+                        mode={datepickerStatus?.type}
+                        open={datepickerStatus?.status}
+                        date={datepickerStatus?.date}
                         onConfirm={(date) => {
-                            setFieldValue("datepickerStatus", { status: false, date: date, type: "date" })
-                            values?.datepickerStatus?.type === "date" ?
-                                setFieldValue("result_date", moment(date).format()) :
-                                setFieldValue("result_time", moment(date).format())
+                            setDatepickerStatus({ status: false, date: moment(date).toDate(), type: "date" })
+                            datepickerStatus?.type === "date" ?
+                                setFieldValue("result_date", moment(date).format("YYYY-MM-DD")) :
+                                setFieldValue("result_time", moment(date).format("HH:mm:ss"))
                         }}
                         onCancel={() => {
-                            setFieldValue("datepickerStatus", { status: false, date: new Date(), type: "" })
+                            setDatepickerStatus({ status: false, date: moment().toDate(), type: "" })
                         }}
                     />}
             </Main>
-        </KeyboardAwareScrollView>
+        </KeyboardAwareScrollView >
     )
 }
 

@@ -1,4 +1,4 @@
-import { View, Dimensions, TouchableOpacity, StatusBar } from 'react-native'
+import { View, Dimensions, TouchableOpacity, StatusBar, Linking } from 'react-native'
 import React, { useState } from 'react'
 import ButtonSolidRound from '../Components/Modules/ButtonSolidRound'
 import TextField from '../Components/Modules/TextField'
@@ -43,11 +43,11 @@ const SignupScreen = ({ navigation }) => {
         enableReinitialize: true,
         validationSchema: validationSchema,
         initialValues: {
-            email: __DEV__ ? "test3@domain.com" : "",
+            email: __DEV__ ? "test31@domain.com" : "",
             farm_name: __DEV__ ? "Test Farm3" : "",
             no_of_cow: __DEV__ ? "10" : "",
-            country: "",
-            password: __DEV__ ? "asdf@1234" : ""
+            country: {cca2: "US", country: {callingCode: ["1"], cca2: "US", currency: ["USD"], flag: "flag-us", name: "United States", region: "Americas", subregion: "North America"}},
+            password: __DEV__ ? "Asdf@7390" : ""
         },
         onSubmit: (values, actions) => {
             const data = {
@@ -63,6 +63,8 @@ const SignupScreen = ({ navigation }) => {
     })
 
     const { handleChange, setFieldValue, handleSubmit, values, errors, touched, isSubmitting } = formik
+
+    // console.log(values.country);
 
     return (
         <Main>
@@ -88,12 +90,12 @@ const SignupScreen = ({ navigation }) => {
                         }}>Welcome to Mastigram+</Text>
                         <Text
                             style={{
-                                fontSize: 18,
+                                fontSize: 12,
                                 textAlign: "center",
                                 color: "#6a6a6a",
                                 marginBottom: 20,
                                 fontFamily: GothamBook,
-                            }}>Create an account to get started</Text>
+                            }}>Create an account to get started. You will share this account across your farm to track mastitis cases and export results to your HMS.</Text>
                         <TextField
                             label={errors.email && touched.email ? errors.email : "Email Address*"}
                             value={values.email}
@@ -158,20 +160,25 @@ const SignupScreen = ({ navigation }) => {
                             value={values.password}
                             onChangeText={handleChange("password")}
                             secureTextEntry={true}
-                            keyboardType="email-address"
                             error={touched.password && errors.password}
                         />
                         <View style={{
                             flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "flex-start",
                             flexWrap: 'wrap'
                         }}>
-                            <Text style={{ fontFamily: GothamBook }}>By continuing, you agree to Mastigram+'s </Text>
-                            <TouchableOpacity activeOpacity={1}>
-                                <Text style={{ color: "#F65C00", fontFamily: GothamBook }}>Terms & Conditions </Text>
+                            <Text style={{ fontFamily: GothamBook, fontSize: 12 }}>By continuing, you agree to Mastigram+'s </Text>
+                            <TouchableOpacity
+                                activeOpacity={1}
+                                onPress={() => Linking.openURL("https://www.zoetis.com/terms-of-use")}>
+                                <Text style={{ color: "#F65C00", fontFamily: GothamBook, fontSize: 12 }}>Terms & Conditions </Text>
                             </TouchableOpacity>
-                            <Text>and </Text>
-                            <TouchableOpacity activeOpacity={1}>
-                                <Text style={{ color: "#F65C00", fontFamily: GothamBook }}>Privacy Policy.</Text>
+                            <Text style={{ fontFamily: GothamBook, fontSize: 12 }}>and </Text>
+                            <TouchableOpacity
+                                activeOpacity={1}
+                                onPress={() => Linking.openURL("https://www.zoetis.com/terms-of-use")}>
+                                <Text style={{ color: "#F65C00", fontFamily: GothamBook, fontSize: 12 }}>Privacy Policy.</Text>
                             </TouchableOpacity>
                         </View>
                         <View style={{ marginTop: 30 }}>

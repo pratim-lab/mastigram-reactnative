@@ -29,7 +29,7 @@ const LoginScreen = ({ navigation }) => {
     enableReinitialize: true,
     validationSchema: validationSchema,
     initialValues: {
-      email: __DEV__ ? "test46@domain.com" : "",
+      email: __DEV__ ? "test2@domain.com" : "",
       password: __DEV__ ? "asdf@1234" : ""
     },
     onSubmit: (values, actions) => { loginAction(values, actions) }
@@ -70,7 +70,6 @@ const LoginScreen = ({ navigation }) => {
               value={values.password}
               onChangeText={handleChange("password")}
               secureTextEntry={true}
-              keyboardType="email-address"
               error={touched.password && errors.password} />
             <TouchableOpacity
               activeOpacity={1}

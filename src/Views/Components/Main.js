@@ -8,6 +8,7 @@ import Loader from './Loader'
 
 const Main = ({ children }) => {
     const messageData = useRecoilValue(messageState)
+    // console.log(messageData);
     const resetMessage = useResetRecoilState(messageState)
     const authData = useRecoilValue(authState)
 
@@ -20,7 +21,6 @@ const Main = ({ children }) => {
 
     useEffect(() => {
         getActionCall()
-        
     }, [])
 
     return (
@@ -28,9 +28,11 @@ const Main = ({ children }) => {
             {children}
             <View style={{
                 width: "100%",
-                justifyContent: "center"
+                justifyContent: "center",
+                zIndex: 999
             }}>
                 <Snackbar
+                    duration={3000}
                     visible={messageData?.status}
                     onDismiss={() => resetMessage()}
                     action={{

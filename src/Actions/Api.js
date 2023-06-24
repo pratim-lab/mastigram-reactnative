@@ -2,8 +2,8 @@ import axios from "axios";
 import { getRecoil, resetRecoil, setRecoil } from "recoil-nexus";
 import { authState, messageState, loadingState } from "./Atoms";
 
-export const apiUrl = __DEV__ ? `https://mastigram.appitrace.com/api/` : `https://mastigram.appitrace.com/api/`
-export const filePath = __DEV__ ? `https://mastigram.appitrace.com/` : `https://mastigram.appitrace.com/`
+export const apiUrl = __DEV__ ? `https://mastigramapp.com/api/` : `https://mastigramapp.com/api/`
+export const filePath = __DEV__ ? `https://mastigramapp.com/` : `https://mastigramapp.com/`
 
 const Api = axios.create({
   baseURL: apiUrl,

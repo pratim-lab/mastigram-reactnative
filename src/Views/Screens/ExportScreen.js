@@ -1,4 +1,4 @@
-import { View, Text, Dimensions, Linking, StatusBar } from 'react-native'
+import { View, Text, Dimensions, Linking, StatusBar, SafeAreaView } from 'react-native'
 import React from 'react'
 // import DateRangePicker from "rn-select-date-range";
 import { Calendar } from 'react-native-calendars';
@@ -15,6 +15,7 @@ import { authState, messageState } from '../../Actions/Atoms';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { exportAction } from '../../Actions/TestActions';
 import DateRangePicker from '../Components/Modules/DateRangePicker';
+import TextFieldMultiline from '../Components/Modules/TextFieldMultiline';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -26,7 +27,7 @@ const ExportScreen = ({ navigation }) => {
 
   const validationSchema = Yup.object().shape({
     email: Yup.string()
-      .email('Invalid email address.')
+      // .email('Invalid email address.')
       .required('Please enter email address'),
   });
 
@@ -57,12 +58,13 @@ const ExportScreen = ({ navigation }) => {
 
   return (
     <Main>
+      <SafeAreaView style={{ flex: 1 }}>
       <StatusBar translucent backgroundColor={"#FFFFFF"} barStyle="dark-content" />
       <View style={{
         flex: 1,
-        paddingTop: 40,
         marginHorizontal: -15,
         marginVertical: -15,
+        padding: 15,
         backgroundColor: "#FFFFFF"
       }}>
         <View style={{ alignItems: "center", marginTop: Platform.OS === "ios" ? 10 : 0 }}>
@@ -121,20 +123,21 @@ const ExportScreen = ({ navigation }) => {
                   onSuccess={(s, e) => {
                     setFieldValue("from_date", s);
                     setFieldValue("to_date", e);
-                  }}
-                  theme={{ markColor: 'rgba(246, 92, 0, 1)', markTextColor: 'white' }} />
+                  }}/>
 
               </View>
               <Text style={{ fontFamily: GothamBook, fontSize: 22, marginVertical: 20 }}>Recipient</Text>
-              <TextField
+              <TextFieldMultiline
                 label={errors?.email && touched?.email ? errors?.email : "Email Address"}
                 error={touched.email && errors.email}
                 value={values?.email}
                 onChangeText={(text) => setFieldValue("email", text)}
-                keyboardType="email-address"
-                inputMode="email"
-                autoCapitalize={false}
+                multiline={true}
               />
+              <Text style={{
+                marginTop: 5,
+                fontSize: 16
+              }}>{`For multiple email recipient separate with (;)`}</Text>
             </KeyboardAwareScrollView>
           </View>
           <View style={{
@@ -155,6 +158,7 @@ const ExportScreen = ({ navigation }) => {
           </View>
         </View>
       </View>
+      </SafeAreaView>
     </Main>
   )
 }

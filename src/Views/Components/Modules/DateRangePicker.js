@@ -1,7 +1,7 @@
+import moment from 'moment';
 import React from 'react'
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { View, Text } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 
 const XDate = require('xdate');
@@ -103,6 +103,7 @@ const DateRangePicker = (props) => {
             markingType={'period'}
             current={fromDate}
             markedDates={markedDates}
+            maxDate={moment().format("YYYY-MM-DD")}
             onDayPress={(day) => { onDayPress(day) }}
             theme={{
                 textSectionTitleColor: '#000000',

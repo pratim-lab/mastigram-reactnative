@@ -7,6 +7,7 @@ import AuthNavigator from './AuthNavigation';
 import AppNavigation from './AppNavigation';
 import { useRecoilValue } from 'recoil';
 import { authState } from '../Actions/Atoms';
+import { navigationRef } from './RootNavigation';
 
 const RootNavigation = () => {
 
@@ -14,7 +15,7 @@ const RootNavigation = () => {
     const Stack = createNativeStackNavigator();
 
     return (
-        <NavigationContainer>
+        <NavigationContainer ref={navigationRef}>
             <StatusBar backgroundColor={Colors.themeColor} barStyle="dark-content" />
             <Stack.Navigator
                 initialRouteName="AuthNavigator"

@@ -1,34 +1,41 @@
 {
   "project_info": {
-    "project_number": "778241987052",
-    "project_id": "mastigram-app",
-    "storage_bucket": "mastigram-app.appspot.com"
+    "project_number": "164247024090",
+    "project_id": "mastigram-plus",
+    "storage_bucket": "mastigram-plus.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:778241987052:android:63e8fe6afdb37b88fef0c9",
+        "mobilesdk_app_id": "1:164247024090:android:92e190c780f1add66950e3",
         "android_client_info": {
           "package_name": "com.mastigramplus.app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "778241987052-6j6irffaksv14jko6hfr4vlfp1j50pbf.apps.googleusercontent.com",
+          "client_id": "164247024090-hjdloa5donpj5b84hrhs0nmsrv87l1sv.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAdlfRRaygEt0pvaEHKAQjaOQ-wk7e9Jm0"
+          "current_key": "AIzaSyDiR6Qn8wApDO91G4NzSc5j3smiqAtrHSg"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "778241987052-6j6irffaksv14jko6hfr4vlfp1j50pbf.apps.googleusercontent.com",
+              "client_id": "164247024090-hjdloa5donpj5b84hrhs0nmsrv87l1sv.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "164247024090-lf1jcje8bu44o3i4icpv9ocs4tcnonjd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mastigramplus.app"
+              }
             }
           ]
         }

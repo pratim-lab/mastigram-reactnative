@@ -43,13 +43,15 @@ const LogTest = ({ route, navigation }) => {
             cow_no: "",
             test_date: moment().format(),
             test_time: moment().format(),
+            current_time: moment().format(),
             alert: true,
         },
         onSubmit: (values, actions) => {
             const data = {
                 cow_no: values.cow_no,
                 test_date: moment(values.test_date).format("YYYY-MM-DD"),
-                test_time: moment(values.test_time).format("HH:mm"),
+                test_time: moment(values.test_time).format("HH:mm:ss"),
+                current_time: values?.current_time,
                 alert: Boolean(values.alert)
             }
             logTestAction(data, actions, navigation)
@@ -58,6 +60,8 @@ const LogTest = ({ route, navigation }) => {
 
     const { setFieldValue, handleSubmit, values, errors, touched, isSubmitting } = formik
 
+    // console.log(moment().format());
+
     return (
         <KeyboardAwareScrollView
             showsVerticalScrollIndicator={false}
@@ -65,8 +69,8 @@ const LogTest = ({ route, navigation }) => {
             <Main>
                 <View style={{
                     flex: 1,
-                    height: Platform.OS === "ios" ? windowHeight - 80 : windowHeight - 25,
-                    marginVertical: -15,
+                    // height: Platform.OS === "ios" ? windowHeight : windowHeight - 25,
+                    marginVertical: -20,
                     marginHorizontal: -15,
                     paddingHorizontal: 15,
                     backgroundColor: "#FFFFFF"
@@ -75,13 +79,14 @@ const LogTest = ({ route, navigation }) => {
                         source={require('../../Resources/Images/banner1.png')}
                         text="Log a Test"
                         backgroundColor="#000000" />
-                    <View style={{ flex: 1 }}>
+                    <View style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
                         <View style={{
                             width: "100%",
                             paddingHorizontal: 10,
                             marginTop: 30,
                             flex: 1,
-                            justifyContent: "space-between"
+                            justifyContent: "space-between",
+                            backgroundColor: "#FFFFFF"
                         }}>
                             <View>
                                 <TextFieldOutline
@@ -193,7 +198,7 @@ const LogTest = ({ route, navigation }) => {
                                 alignItems: "center",
                                 borderTopWidth: 1,
                                 marginHorizontal: -25,
-                                borderColor: "#D0D0D0"
+                                borderColor: "#FFFFFF"
                             }}>
                                 <ButtonSolidRound
                                     title="Submit"
@@ -209,6 +214,7 @@ const LogTest = ({ route, navigation }) => {
                             mode={datepickerStatus?.type}
                             open={datepickerStatus?.status}
                             date={datepickerStatus?.date}
+                            maximumDate={new Date(datepickerStatus?.type === "date" ? moment().format("YYYY-MM-DD") : moment().add(1, "d").format("YYYY-MM-DD"))}
                             onConfirm={(date) => {
                                 setDatepickerStatus({ status: false, date: date, type: "date" })
                                 datepickerStatus?.type === "date" ?

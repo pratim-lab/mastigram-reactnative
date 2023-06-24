@@ -16,6 +16,7 @@ import ImageHeader from '../Components/ImageHeader'
 import { getTestByIDAction } from '../../Actions/TestActions'
 import { testByIDState } from '../../Actions/Atoms'
 import { GothamBook } from '../../assets/fonts/font';
+import { useIsFocused } from '@react-navigation/native';
 
 
 // const windowWidth = Dimensions.get('window').width;
@@ -26,17 +27,18 @@ const TestDetails = ({ route, navigation }) => {
     const screenRef = useRef();
     const { id } = route.params;
     const testData = useRecoilValue(testByIDState)
+    const isFocused = useIsFocused();
     // const setMessage = useSetRecoilState(messageState)
 
     useEffect(() => {
         getTestByIDAction({
             test_id: id
         })
-    }, [id])
+    }, [id, isFocused])
 
     const onCapture = useCallback(() => {
         screenRef.current.capture().then(uri => {
-            console.log("do something with ", uri);
+            // console.log("do something with ", uri);
             // onShare(uri)
             RNFS.readFile(uri, 'base64').then((res) => {
                 let urlString = 'data:image/jpeg;base64,' + res;
@@ -62,7 +64,7 @@ const TestDetails = ({ route, navigation }) => {
                     ref={screenRef}
                     style={{
                         flex: 1,
-                        marginVertical: -15,
+                        marginVertical: -20,
                         marginHorizontal: -15,
                         paddingHorizontal: 15,
                         backgroundColor: "#FFFFFF"

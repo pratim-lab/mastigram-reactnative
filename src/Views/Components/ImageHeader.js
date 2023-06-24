@@ -5,13 +5,15 @@ import { Image } from 'react-native'
 import { GothamBook } from '../../assets/fonts/font'
 import { Dimensions } from 'react-native'
 import { IconButton } from 'react-native-paper'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
 
 const windowWidth = Dimensions.get('window').width;
 
 const ImageHeader = (props) => {
     const { source, subText, text, backgroundColor, iconColor } = props
     const navigation = useNavigation();
+    const route = useRoute();
+    // console.log(route.name);
     return (
         <View>
             <StatusBar translucent backgroundColor={backgroundColor ? backgroundColor : "#000000"} barStyle="light-content" />
@@ -22,7 +24,7 @@ const ImageHeader = (props) => {
                 marginHorizontal: -15,
             }}>
                 <IconButton
-                    onPress={() => navigation.goBack()}
+                    onPress={() => route.name === "LogResult" ? navigation.navigate("TestRecordTab", { screen: "TestRecords" }) : navigation.goBack()}
                     icon="chevron-left-circle"
                     color={iconColor ? iconColor : 'rgba(208, 208, 208, 1)'}
                     size={35}

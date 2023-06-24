@@ -1,5 +1,5 @@
 import { setRecoil } from "recoil-nexus";
-import { authState, messageState, profileState, fcmTokenState } from "./Atoms";
+import { authState, messageState, profileState, fcmTokenState, forgotState } from "./Atoms";
 import Api from "./Api";
 import { saveToken } from "../Resources/pushNotificationManager";
 
@@ -115,5 +115,68 @@ export const saveFCMTomen = async (values) => {
                 setRecoil(fcmTokenState, values.deviceToken)
             }
         }).catch((error) => {
+        })
+}
+
+
+export const forgotPasswordAction = async (values, actions, setOpenOtp) => {
+    Api.post(`auth/forgot-password`, values)
+        .then(async({ data }) => {
+            // console.log("loginAction", data);
+            if (data.status === true) {
+                setOpenOtp(true)
+                setRecoil(messageState, {
+                    type: 'success',
+                    status: true,
+                    message: data?.message
+                });
+            } else {
+                setRecoil(messageState, {
+                    type: 'warn',
+                    status: true,
+                    message: data?.message
+                });
+            }
+            actions.setSubmitting(false)
+        }).catch((error) => {
+            setRecoil(messageState, {
+                type: 'error',
+                status: true,
+                message: "Something went wrong. Please try again."
+            });
+            actions.setSubmitting(false)
+        })
+}
+
+export const resetPasswordAction = async (values, actions, setOpenOtp, navigation) => {
+    Api.post(`auth/reset-password`, values)
+        .then(async({ data }) => {
+            // console.log("loginAction", data);
+            if (data.status === true) {
+                setOpenOtp(false)
+                await setRecoil(forgotState, {
+                    data: data?.data
+                })
+                setRecoil(messageState, {
+                    type: 'success',
+                    status: true,
+                    message: data?.message
+                });
+                navigation.navigate("Login")
+            } else {
+                setRecoil(messageState, {
+                    type: 'warn',
+                    status: true,
+                    message: data?.errorMessage
+                });
+            }
+            actions.setSubmitting(false)
+        }).catch((error) => {
+            setRecoil(messageState, {
+                type: 'error',
+                status: true,
+                message: "Something went wrong. Please try again."
+            });
+            actions.setSubmitting(false)
         })
 }

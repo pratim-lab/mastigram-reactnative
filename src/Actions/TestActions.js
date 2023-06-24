@@ -2,7 +2,7 @@ import { setRecoil } from "recoil-nexus";
 import { loadingState, messageState, testListState, testByIDState } from "./Atoms";
 import Api from "./Api";
 
-export const getTestListAction = async (values) => {
+export const getTestListAction = async (values, type, setData) => {
     // console.log("getTestListAction value", values);
     setRecoil(loadingState, {
         status: true,
@@ -13,6 +13,15 @@ export const getTestListAction = async (values) => {
             // console.log("log-test", data);
             if (data.status === true) {
                 setRecoil(testListState, data?.data?.data);
+                if (type === "F" && data?.data?.data?.length === 0) {
+                    setRecoil(messageState, {
+                        type: 'warn',
+                        status: true,
+                        message: "No records found."
+                    });
+                } else {
+                    setData({ status: false, data: values })
+                }
             } else {
                 setRecoil(testListState, []);
                 setRecoil(messageState, {
@@ -53,7 +62,7 @@ export const logTestAction = async (values, actions, navigation) => {
     // console.log(values);
     Api.post(`log-test`, values)
         .then(({ data }) => {
-            console.log("log-test", data);
+            // console.log("log-test", data);
             if (data.status === true) {
                 setRecoil(messageState, {
                     type: 'success',
@@ -85,7 +94,7 @@ export const logResultAction = async (values, actions, navigation) => {
     // console.log(values);
     Api.post(`log-test-result`, values)
         .then(({ data }) => {
-            console.log("log-result", data);
+            // console.log("log-result", data);
             if (data.status === true) {
                 setRecoil(messageState, {
                     type: 'success',
@@ -117,7 +126,7 @@ export const exportAction = async (values, actions, navigation) => {
     console.log(values);
     Api.post(`sendTestResultMail`, values)
         .then(({ data }) => {
-            console.log("log-result-export", data);
+            // console.log("log-result-export", data);
             if (data.status) {
                 // setRecoil(messageState, {
                 //     type: 'success',
@@ -142,14 +151,14 @@ export const exportAction = async (values, actions, navigation) => {
 }
 
 export const deleteMultiAction = async (values, setOpenCheckbox, closeSwipeable) => {
-    console.log(values);
+    // console.log(values);
     setRecoil(loadingState, {
         status: true,
         type: "screen"
     })
     Api.post(`testMultipleDelete`, values)
         .then(({ data }) => {
-            console.log("log-result-export", data);
+            // console.log("log-result-export", data);
             if (data.status) {
                 setRecoil(messageState, {
                     type: 'success',
@@ -178,16 +187,13 @@ export const deleteMultiAction = async (values, setOpenCheckbox, closeSwipeable)
         })
 }
 
-export const sendReporMultiAction = async (values, actions, setOpenCheckbox, setOpenEmail, setEmailAddress) => {
-    // console.log(values);
-    setRecoil(loadingState, {
-        status: true,
-        type: "screen"
-    })
+export const sendReporMultiAction = async (values, actions, setOpenCheckbox, setOpenEmail) => {
+    console.log(values);
     Api.post(`shareTestResultMail`, values)
         .then(({ data }) => {
-            // console.log("log-result-export", data?.error?.testIds);
+            actions.setSubmitting(false);
             if (data.status) {
+                // console.log("log-result-export", data.status);
                 setRecoil(messageState, {
                     type: 'success',
                     status: true,
@@ -195,7 +201,7 @@ export const sendReporMultiAction = async (values, actions, setOpenCheckbox, set
                 });
                 setOpenCheckbox(false)
                 setOpenEmail(false)
-                setEmailAddress()
+                // setEmailAddress()
             } else {
                 actions.setErrors(data?.error)
             }
@@ -204,6 +210,8 @@ export const sendReporMultiAction = async (values, actions, setOpenCheckbox, set
                 type: "screen"
             })
         }).catch((error) => {
+            actions.setSubmitting(false);
+            actions.setErrors({ email: "Something went wrong. Please try again." })
             console.log(error);
         })
 }

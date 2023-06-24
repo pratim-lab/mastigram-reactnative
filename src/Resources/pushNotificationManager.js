@@ -4,25 +4,30 @@ import { saveFCMTomen } from '../Actions/AuthActions';
 import { getTestListAction } from '../Actions/TestActions';
 
 export const requestUserPermission = async () => {
-    const authStatus = await messaging().requestPermission();
+    const authStatus = await messaging().requestPermission({
+        announcement: true
+    });
     const enabled = authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
         authStatus === messaging.AuthorizationStatus.PROVISIONAL;
     if (enabled) {
-        console.log(authStatus) // you can remove the console.log later
+        console.log('FCM Authorization status:', authStatus) // you can remove the console.log later
     }
 };
 
-export const NotificationListener = () => {
+export const NotificationListener = (navigation) => {
     messaging().onNotificationOpenedApp(remoteMessage => {
         getTestListAction({
             result_type: "active"
         })
-        console.log('Notification caused app to open from background state:', remoteMessage.notification,);
+        console.log('Notification caused app to open from background state:', remoteMessage?.data?.test_id);
+        // navigation.navigate("TestRecordTab", { screen: "LogResult", params: { id: remoteMessage?.data?.test_id } })
+        navigation.navigate("TestRecordTab", { screen: "LogResult", params: { id: remoteMessage?.data?.test_id } })
     });
 
     messaging().getInitialNotification().then(remoteMessage => {
         if (remoteMessage) {
             console.log('Notification caused app to open from quit state:', remoteMessage.notification);
+            navigation.navigate("TestRecordTab", { screen: "LogResult", params: { id: remoteMessage?.data?.test_id } })
         }
     });
 
@@ -40,5 +45,5 @@ export const saveToken = async () => {
     const token = await messaging().getToken();
     // console.log(token);
     // Alert.alert("Save Request", JSON.stringify(token))
-    await saveFCMTomen({ deviceToken: token })
+    token && await saveFCMTomen({ deviceToken: token })
 }
